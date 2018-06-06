@@ -42,6 +42,8 @@ namespace std {
     $action
   } catch (const std::invalid_argument &e) {
     SWIG_exception(SWIG_ValueError, e.what());
+  } catch (const std::out_of_range &e) {
+    SWIG_exception(SWIG_OverflowError, e.what());
   }
 }
 
@@ -57,16 +59,19 @@ namespace std {
 #include "bindings/model_crypto.hpp"
 #include "bindings/model_proto.hpp"
 #include "builders/protobuf/unsigned_proto.hpp"
+#include "backend/protobuf/permissions.hpp"
 %}
 
 %include "cryptography/blob.hpp"
 %include "interfaces/common_objects/types.hpp"
 %include "interfaces/base/signable.hpp"
+%include "interfaces/permissions.hpp"
 %include "cryptography/public_key.hpp"
 %include "cryptography/private_key.hpp"
 %include "cryptography/hash.hpp"
 %include "cryptography/keypair.hpp"
 %include "cryptography/signed.hpp"
+%include "backend/protobuf/permissions.hpp"
 %include "backend/protobuf/transaction.hpp"
 %include "backend/protobuf/queries/proto_query.hpp"
 
@@ -80,3 +85,6 @@ namespace std {
 %template (UnsignedQuery) shared_model::proto::UnsignedWrapper<shared_model::proto::Query>;
 %template (ModelProtoTransaction) shared_model::bindings::ModelProto<shared_model::proto::UnsignedWrapper<shared_model::proto::Transaction>>;
 %template (ModelProtoQuery) shared_model::bindings::ModelProto<shared_model::proto::UnsignedWrapper<shared_model::proto::Query>>;
+%template (RolePermissionSet) shared_model::interface::PermissionSet<shared_model::interface::permissions::Role>;
+%template (GrantablePermissionSet) shared_model::interface::PermissionSet<shared_model::interface::permissions::Grantable>;
+

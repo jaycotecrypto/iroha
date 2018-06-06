@@ -68,8 +68,7 @@ TYPED_TEST_CASE(ProtoPermission, PermTypes);
  */
 TYPED_TEST(ProtoPermission, IsValid) {
   boost::for_each(boost::irange(0, TypeParam::size()), [&](auto i) {
-    this->perm = getRole<decltype(this->perm)>(i);
-    ASSERT_TRUE(isValid(this->perm));
+    ASSERT_TRUE(isValid(getRole<typename TypeParam::Model>(i)));
   });
 }
 
@@ -128,7 +127,8 @@ TYPED_TEST(ProtoPermission, SizesMatch) {
 TEST(ProtoPermission, PermissionSet) {
   using Role = shared_model::interface::permissions::Role;
   using PermSet = shared_model::interface::PermissionSet<Role>;
-  PermSet set{Role::kAppendRole, Role::kAddAssetQty, Role::kAddPeer};
+  PermSet set{};
+  set.append({Role::kAppendRole, Role::kAddAssetQty, Role::kAddPeer});
   ASSERT_TRUE(set[Role::kAppendRole]);
   ASSERT_TRUE(set[Role::kAddAssetQty]);
   ASSERT_TRUE(set[Role::kAddPeer]);
@@ -142,7 +142,8 @@ TEST(ProtoPermission, PermissionSet) {
 TEST(ProtoPermission, PermissionSubset) {
   using Role = shared_model::interface::permissions::Role;
   using PermSet = shared_model::interface::PermissionSet<Role>;
-  PermSet big{Role::kAppendRole,
+  PermSet big{};
+  big.append({Role::kAppendRole,
               Role::kCreateRole,
               Role::kDetachRole,
               Role::kAddAssetQty,
@@ -155,14 +156,15 @@ TEST(ProtoPermission, PermissionSubset) {
               Role::kSetDetail,
               Role::kCreateAsset,
               Role::kTransfer,
-              Role::kReceive};
-  PermSet sub{Role::kAppendRole,
+              Role::kReceive});
+  PermSet sub{};
+  sub.append({Role::kAppendRole,
               Role::kCreateRole,
               Role::kDetachRole,
               Role::kSubtractAssetQty,
               Role::kAddSignatory,
               Role::kSetDetail,
-              Role::kCreateAsset};
+              Role::kCreateAsset});
   auto nonsub = sub;
   ASSERT_FALSE(big.test(Role::kGetDomainAccounts));
   nonsub.set(Role::kGetDomainAccounts);
